@@ -1,6 +1,7 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
 from .data import process_data
+import pandas as pd
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
@@ -102,7 +103,7 @@ def slice_performance(df,
            current_df = df[df[col] == val]
            x, y, _, _ = process_data(
               X = current_df,
-              categorical_columns = cat_columns,
+              categorical_features = cat_columns,
               label = target,
               training = False,
               encoder = encoder,
@@ -113,7 +114,7 @@ def slice_performance(df,
            predictions = inference(model, x)
 
            # compute metrics and save them for this slice
-           precision, recall, fscore = compute_model_metrics(y, preds)
+           precision, recall, fscore = compute_model_metrics(y, predictions)
            current_results['column_name'] = col
            current_results['slice'] = val
            current_results['precision'] = precision
@@ -121,10 +122,10 @@ def slice_performance(df,
            current_results['f1-score'] = fscore
            metrics_list.append(current_results)
        
-  metrics_df = pd.DataFrame(metrics_list, columns = m_columns)
+   metrics_df = pd.DataFrame(metrics_list, columns = m_columns)
   
-  # write to disk
-  if(path):
+   # write to disk
+   if(path):
        metrics_df.to_csv(path, index = False)
 
-  return metrics_df
+   return metrics_df
