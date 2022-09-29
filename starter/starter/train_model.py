@@ -42,3 +42,12 @@ X_test, y_test, _, _ = process_data(
 trained_model = model.train_model(X_train, y_train)
 with open(MODEL_PATH, "wb") as file:
    pkl.dump([encoder, lb, mod], file)
+
+model.slice_performance(
+    df = test, 
+    model = trained_model, 
+    cat_columns = cat_features, 
+    target = "salary", 
+    encoder = encoder, 
+    lb = lb, 
+    path = "./model/slice_output.txt")

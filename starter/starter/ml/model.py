@@ -1,5 +1,6 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
+from .data import process_data
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
@@ -63,3 +64,67 @@ def inference(model, X):
     preds = model.predict(X)
 
     return preds
+
+
+def slice_performance(df, 
+                      model, 
+                      cat_columns, 
+                      target, 
+                      encoder, 
+                      lb, 
+                      path):
+   """
+   Function which outputs slice performance of the model
+
+   Input:
+      - df (Pandas DataFrame): input data
+      - model (sklearn model): trained model
+      - cat_columns (list): categorical columns
+      - target (string): target variable
+      - encoder (sklearn one hot encoder): one hot encoder
+      - lb (sklearn label binarizer): label binarizer
+      - path (string): output path
+
+   Output:
+     - metrics_df (Pandas DataFrame): output with performance metrics
+   """
+
+   # Create empty metrics df, to fill with each slice's performance
+   m_columns = ["column_name", "slice", "precision", "recall", "f1-score"]
+   metrics_list = []
+
+   # Iterate through all categorical columns, evaluate each slice
+   for col in cat_columns:
+       curr_unique_vals = df[col].unique()
+       # for each slice
+       for val in curr_unique_vals:
+           current_results = {}
+           current_df = df[df[col] == val]
+           x, y, _, _ = process_data(
+              X = current_df,
+              categorical_columns = cat_columns,
+              label = target,
+              training = False,
+              encoder = encoder,
+              lb = lb
+           )
+           
+           # generate predictions
+           predictions = inference(model, x)
+
+           # compute metrics and save them for this slice
+           precision, recall, fscore = compute_model_metrics(y, preds)
+           current_results['column_name'] = col
+           current_results['slice'] = val
+           current_results['precision'] = precision
+           current_results['recall'] = recall
+           current_results['f1-score'] = fscore
+           metrics_list.append(current_results)
+       
+  metrics_df = pd.DataFrame(metrics_list, columns = m_columns)
+  
+  # write to disk
+  if(path):
+       metrics_df.to_csv(path, index = False)
+
+  return metrics_df
