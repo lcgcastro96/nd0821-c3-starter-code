@@ -21,6 +21,7 @@ cat_features = [
 ]
 PATH_MODEL = "../model/model.pkl"
 PATH_DATA = "../data/census.csv"
+PATH_SLICE = "../model/slice_output.txt"
 
 # Add code to load in the data.
 data = pd.read_csv(PATH_DATA)
@@ -50,4 +51,4 @@ model.slice_performance(
     target = "salary", 
     encoder = encoder, 
     lb = lb, 
-    path = "./model/slice_output.txt")
+    path = PATH_SLICE)

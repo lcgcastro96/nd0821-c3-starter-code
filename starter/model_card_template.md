@@ -18,7 +18,7 @@ Small split from the same Census Bureau data.
 _Please include the metrics used and your model's performance on those metrics._
 
 ## Ethical Considerations
-Model may be biased based on the data it used, especially regarding gender, race and location.
+Model may be biased based on the data it used, especially regarding gender, race and workclass.
 
 ## Caveats and Recommendations
 Better feature engineering may improve results.
