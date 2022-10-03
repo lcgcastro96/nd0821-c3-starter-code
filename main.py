@@ -42,20 +42,11 @@ async def hello_world():
     """
     return 'Welcome to the Salary Prediction App!'
 
-@app.post("/model")
-async def prediction(sample: Sample):
-    """
-    Prediction POST method
-    Input:
-        Input data
-    Output:
-        Input data prediction.
-    """
-    # Formatting input_data
-    input_dict = {key.replace('_', '-'): [value] for key, value in sample.__dict__.items()}
-    input_df = pd.DataFrame(input_dict)
+@app.post("/")
+async def predict(sample: Sample):
+    sample = {key.replace('_', '-'): [value] for key, value in sample.__dict__.items()}
+    data = pd.DataFrame.from_dict(sample)
 
-    # categorical cols
     cat_features = [
         "workclass",
         "education",
@@ -67,15 +58,8 @@ async def prediction(sample: Sample):
         "native-country",
     ]
 
-    x_data, _, _, _ = process_data(
-        X=input_df,
-        categorical_features=cat_features,
-        label=None,
-        training=False,
-        encoder=encoder,
-        lb=lb
-    )
+    X, _, _, _ = process_data(data, categorical_features=cat_features, label=None, 
+        training=False, encoder=encoder, lb=lb)
 
-    # get predictions and return
-    pred = inference(model, x_data)
-    return {"Result": "<=50K" if int(pred[0]) == 0 else ">50K"}
+    pred = inference(model, X)[0]
+    return '<=50K' if pred == 0 else '>50K'
