@@ -19,9 +19,9 @@ cat_features = [
     "sex",
     "native-country",
 ]
-PATH_MODEL = "../model/model.pkl"
-PATH_DATA = "../data/census.csv"
-PATH_SLICE = "../model/slice_output.txt"
+PATH_MODEL = "./model/model.pkl"
+PATH_DATA = "./data/census.csv"
+PATH_SLICE = "./model/slice_output.txt"
 
 # Add code to load in the data.
 data = pd.read_csv(PATH_DATA)
