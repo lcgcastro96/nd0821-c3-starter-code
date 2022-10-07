@@ -1,6 +1,12 @@
 import json
 from fastapi.testclient import TestClient
-from main import app
+import sys
+
+try:
+    from main import app
+except ModuleNotFoundError:
+    sys.path.append('./')
+    from main import app
 
 client = TestClient(app)
 
@@ -11,7 +17,7 @@ def test_get_root():
     assert r.json() == "Welcome to the Salary Prediction App!"
 
 # invoke incorrect path
-def test_incorrect_path(client):
+def test_incorrect_path():
     """Test response for non existent path"""
 
     res = client.get("/foo")
@@ -20,7 +26,7 @@ def test_incorrect_path(client):
     assert res.json() == {"detail":"Not Found"}
 
 # test a priori expected
-def test_post_below(client):
+def test_post_below():
     """Test for salary below 50K"""
     res = client.post("/model", json={
         "age": 50,
@@ -40,27 +46,27 @@ def test_post_below(client):
     })
 
     assert res.status_code == 200
-    assert res.json() == {'Result': '<=50K'}
+    assert res.json() == '<=50K'
 
 # test a priori expected
-def test_post_below(client):
+def test_post_above():
     """Test for salary below 50K"""
     res = client.post("/model", json={
-        "age": 45,
+        "age": 60,
         "workclass": "Private",
         "fnlgt": 141297,
         "education": "Masters",
-        "education_num": 14,
-        "marital_status": "Separated",
+        "education_num": 10,
+        "marital_status": "Married-civ-spouse",
         "occupation": "Exec-managerial",
-        "relationship": "Unmarried",
+        "relationship": "Husband",
         "race": "White",
-        "sex": "Female",
+        "sex": "Male",
         "capital_gain": 0,
         "capital_loss": 0,
-        "hours_per_week": 70,
+        "hours_per_week": 60,
         "native_country": "United-States"
     })
 
     assert res.status_code == 200
-    assert res.json() == {'Result': '>50K'}
+    assert res.json() == '>50K'

@@ -43,7 +43,7 @@ async def hello_world():
     """
     return 'Welcome to the Salary Prediction App!'
 
-@app.post("/")
+@app.post("/model")
 async def predict(sample: Sample):
     sample = {key.replace('_', '-'): [value] for key, value in sample.__dict__.items()}
     data = pd.DataFrame.from_dict(sample)
@@ -62,5 +62,5 @@ async def predict(sample: Sample):
     X, _, _, _ = process_data(data, categorical_features=cat_features, label=None, 
         training=False, encoder=encoder, lb=lb)
 
-    pred = inference(model, X)[0]
+    pred = int(inference(model, X)[0])
     return '<=50K' if pred == 0 else '>50K'
