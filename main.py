@@ -9,13 +9,14 @@ from starter.ml.model import inference
 app = FastAPI(
     title="Salary Model",
     description="Given census data, it will predict if the person earns above 50K",
-    version="1.0.0",
+    version="1.1.0",
 )
 
 PATH_MODEL = "model/model.pkl"
 with open(PATH_MODEL, 'rb') as f:
     encoder, lb, model = pkl.load(f)
 
+# Pydantic sample class
 class Sample(BaseModel):
     age: int = Field(None)
     workclass: str = Field(None)

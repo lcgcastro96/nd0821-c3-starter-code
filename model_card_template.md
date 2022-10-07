@@ -15,7 +15,9 @@ Census Bureau data, publicly available.
 Small split from the same Census Bureau data.
 
 ## Metrics
-_Please include the metrics used and your model's performance on those metrics._
+Precision = ~73,20%
+Recall = ~61,74%
+F1-Score = ~66,99%
 
 ## Ethical Considerations
 Model may be biased based on the data it used, especially regarding gender, race and workclass.

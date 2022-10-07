@@ -1,11 +1,11 @@
 # Script to train machine learning model.
-
 from sklearn.model_selection import train_test_split
 
 # Add the necessary imports for the starter code.
 import pandas as pd
 from ml import model
 from ml.data import process_data
+from ml.model import inference, compute_model_metrics
 import pickle as pkl
 
 # Definition of necessary variables
@@ -22,6 +22,7 @@ cat_features = [
 PATH_MODEL = "./model/model.pkl"
 PATH_DATA = "./data/census.csv"
 PATH_SLICE = "./model/slice_output.txt"
+PATH_PERF = "./model/performance.csv"
 
 # Add code to load in the data.
 data = pd.read_csv(PATH_DATA)
@@ -44,6 +45,12 @@ trained_model = model.train_model(X_train, y_train)
 with open(PATH_MODEL, "wb") as file:
    pkl.dump([encoder, lb, trained_model], file)
 
+# Get performance on test set
+preds = inference(trained_model, X_test)
+perf = compute_model_metrics(y_test, preds)
+
+
+# Get slice performance
 model.slice_performance(
     df = test, 
     model = trained_model, 
