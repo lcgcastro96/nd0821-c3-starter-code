@@ -6,13 +6,13 @@ For additional information see the Model Card paper: https://arxiv.org/pdf/1810.
 Random Forest Classifier. Performs binary classification, using census data, on whether an individual has an income superior (or not) to 50K USD.
 
 ## Intended Use
-Not applicable.
+Model intended for educational use.
 
 ## Training Data
 Census Bureau data, publicly available.
 
 ## Evaluation Data
-Small split from the same Census Bureau data.
+Small split of 20% from the same Census Bureau data mentioned above.
 
 ## Metrics
 Precision = ~73,20%
