@@ -1,14 +1,33 @@
 import json
 from fastapi.testclient import TestClient
 import sys
+import pytest
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
+# imports
 try:
     from main import app
+    from ml.data import process_data
+    from ml.model import inference, train_model, compute_model_metrics
 except ModuleNotFoundError:
     sys.path.append('./')
+    sys.path.append('./starter/')
     from main import app
+    from ml.data import process_data
+    from ml.model import inference, train_model, compute_model_metrics
 
 client = TestClient(app)
+cat_features = [
+    "workclass",
+    "education",
+    "marital-status",
+    "occupation",
+    "relationship",
+    "race",
+    "sex",
+    "native-country",
+]
 
 # root unit test
 def test_get_root():
@@ -103,3 +122,49 @@ def test_post_above():
 
     assert res.status_code == 200
     assert res.json() == '>50K'
+
+# input ddata
+@pytest.fixture()
+def input_data():
+    df = pd.read_csv("./data/census.csv")
+    train, test = train_test_split(df, test_size=0.2)
+    return train, test
+
+# test the inference, prediction array length needs to be equal to x_train
+def test_inference(input_data):
+
+    train_df, _ = input_data
+
+    X_train, y_train, _, _ = process_data(
+        X=train_df,
+        categorical_features=cat_features,
+        label='salary',
+        training=True
+    )
+
+    tm = train_model(X_train, y_train)
+    preds = inference(tm, X_train)
+
+    assert len(preds) == len(X_train)
+
+
+# assert that the metrics are all above 0 and below 100
+def test_compute_metrics(input_data):
+
+    train, _ = input_data
+
+    X_train, y_train, encoder, lb = process_data(
+        X=train,
+        categorical_features=cat_features,
+        label='salary',
+        training=True
+    )
+
+    clf = train_model(X_train, y_train)
+    preds = inference(clf, X_train)
+    pr, rc, fscore = compute_model_metrics(y_train, preds)
+
+    # Assert no metric has a value above 1.0
+    for metric in [pr, rc, fscore]:
+        assert metric <= 1.0
+        assert metric >= 0.0
